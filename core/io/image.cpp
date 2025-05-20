@@ -78,6 +78,7 @@ const char *Image::format_names[Image::FORMAT_MAX] = {
 	"ASTC_4x4_HDR",
 	"ASTC_8x8",
 	"ASTC_8x8_HDR",
+	"FIVE_RGBA8",
 };
 
 // External VRAM compression function pointers.
@@ -201,6 +202,8 @@ int Image::get_format_pixel_size(Format p_format) {
 			return 1;
 		case FORMAT_ASTC_8x8_HDR:
 			return 1;
+		case FORMAT_FIVE_RGBA8:
+		    return 20;
 		case FORMAT_MAX: {
 		}
 	}
@@ -3255,6 +3258,13 @@ Color Image::_get_color_at_ofs(const uint8_t *ptr, uint32_t ofs) const {
 		case FORMAT_RGBE9995: {
 			return Color::from_rgbe9995(((uint32_t *)ptr)[ofs]);
 		}
+		case FORMAT_FIVE_RGBA8: {
+			float r = ptr[ofs * 20 + 0] / 255.0;
+			float g = ptr[ofs * 20 + 1] / 255.0;
+			float b = ptr[ofs * 20 + 2] / 255.0;
+			float a = ptr[ofs * 20 + 3] / 255.0;
+			return Color(r, g, b, a);
+		}
 
 		default: {
 			ERR_FAIL_V_MSG(Color(), "Can't get_pixel() on compressed image, sorry.");
@@ -3660,6 +3670,7 @@ void Image::_bind_methods() {
 	BIND_ENUM_CONSTANT(FORMAT_ASTC_4x4_HDR);
 	BIND_ENUM_CONSTANT(FORMAT_ASTC_8x8);
 	BIND_ENUM_CONSTANT(FORMAT_ASTC_8x8_HDR);
+	BIND_ENUM_CONSTANT(FORMAT_FIVE_RGBA);
 	BIND_ENUM_CONSTANT(FORMAT_MAX);
 
 	BIND_ENUM_CONSTANT(INTERPOLATE_NEAREST);
@@ -4072,6 +4083,8 @@ uint32_t Image::get_format_component_mask(Format p_format) {
 		case FORMAT_ASTC_8x8:
 			return rgba;
 		case FORMAT_ASTC_8x8_HDR:
+			return rgba;
+		case FORMAT_FIVE_RGBA8:
 			return rgba;
 		default:
 			ERR_PRINT("Unhandled format.");
