@@ -8,6 +8,11 @@
 class SpacedSampledViewportTexture : public ViewportTexture {
 	GDCLASS(SpacedSampledViewportTexture, ViewportTexture);
 
+	int x_offset = 0;
+	int x_step = 1;
+	int y_offset = 0;
+	int y_step = 1;
+
 protected:
 	static void _bind_methods();
 
